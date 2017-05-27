@@ -1,0 +1,22 @@
+body{
+    width: 100%;
+}
+#drag{
+    width: 15%;
+    float: left;
+    border: 1px solid gray;
+    min-height: 100px;
+}
+#drag span{
+    border: 1px solid gray;
+    display: block;
+    padding: 10px;
+    cursor: move;
+}
+.obj-dropped{
+    z-index: 10;
+}
+#drop {overflow: auto;word-wrap: break-word; margin: 10px; width: 80%; min-height: 100px;height: 100%; border: 1px solid gray; }
+.highlight { border-style: dashed!important;
+border-width: 2px;}
+.hover { background-color: yellow; }
