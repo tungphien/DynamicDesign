@@ -3,7 +3,6 @@
  */
 var controlProperty = {
     'Label': {
-        'name': 'label',
         'text': 'label'
     }
 };
@@ -20,23 +19,38 @@ $(document).ready(function () {
         cursor: 'move',
         revert: true
     });
+    $(document).on('keyup', '#properties input', function (event) {
+        var type = $(this).data('name');
+        if (type == 'text') {
+            $('.obj-dropped.selected').find('label:first-child').text($(this).val());
+        }
+    });
     $(document).on('click', '.obj-dropped', function (event) {
         event.preventDefault();
-        console.log($(this).data('type'));
-        var typeControl=$(this).data('type');
-        switch (typeControl){
-            case 'Label':{
-                var cp=controlProperty[typeControl];
-                console.log($(this).find('label')[0].innerHTML);
-                var text=$(this).find('label')[0].innerHTML;
-                cp['text']=text;
-                console.log(cp);
-
-
+        $('.obj-dropped').removeClass('selected');
+        $(this).addClass('selected');
+        var typeControl = $(this).data('type');
+        var property = $("#properties");
+        property.html("");
+        switch (typeControl) {
+            case 'Label':
+            {
+                var cp = controlProperty[typeControl];
+                var control = $(this).find('label:first-child');
+                var text = control.html();
+                cp['text'] = text;
+                Object.keys(cp).forEach(function (key, index) {
+                    property.append(`<div>
+                    ${key}
+                    </div>
+                    <div><input type="text" data-name="${key}" value="${cp[key]}" /></div>
+                    `);
+                });
                 break;
             }
+            // case ...
         }
-    })
+    });
 });
 
 function mapAndRenderControl(type) {
