@@ -3,17 +3,26 @@
  */
 var controlProperty = {
     'Label': {
-        'text': 'label'
+        'text': 'label',
+        'style': ''
     },
     'Textbox': {
         'placeHolder': '',
         'style': ''
     },
+    'Textarea': {
+        'placeHolder': '',
+        'style': '',
+        'cols': 2,
+        'rows': 4
+    },
     'Combobox': {
-        'items': ''
+        'items': '',
+        'style': ''
     },
     'Radio': {
-        'name': ''
+        'name': '',
+        'style': ''
     }
 };
 $(document).ready(function () {
@@ -32,33 +41,37 @@ $(document).ready(function () {
 
     $(document).on('click', '.remo_control', function (event) {
         $(this).parents('.obj-dropped.selected').remove();
-        setTimeout(function(){
+        setTimeout(function () {
             $("#properties").html('');
-        },500);
+        }, 500);
     });
     $(document).on('keyup', '#properties input', function (event) {
         var attr = $(this).data('attr');
         var control_name = $(this).data('control_name');
         var control = $('.obj-dropped.selected').find("[name=" + control_name + "]");
-        if (attr == 'text') {
-            control.text($(this).val());
+        var value = $(this).val();
+        switch (attr) {
+            case 'text':
+            {
+                control.text(value);
+                break;
+            }
+            case 'items':
+            {
+                var items = $(this).val().split(';');
+                control.html('');
+                items.map(function (item) {
+                    control.append(`<option value="${item}">${item}</option>`);
+                });
+                break;
+            }
+            default :
+            {
+                control.attr(attr, value);
+                break;
+            }
         }
-        if (attr == 'placeHolder') {
-            control.attr(attr, $(this).val());
-        }
-        if (attr == 'style') {
-            control.attr(attr, $(this).val());
-        }
-        if (attr == 'items') {
-            var items = $(this).val().split(';');
-            control.html('');
-            items.map(function (item) {
-                control.append(`<option value="${item}">${item}</option>`);
-            });
-        }
-        if(attr=='name'){
-            control.attr(attr,$(this).val());
-        }
+
     });
     $(document).on('click', '.obj-dropped', function (event) {
         $('.obj-dropped').removeClass('selected');
@@ -75,7 +88,9 @@ $(document).ready(function () {
                 control = $(this).find('label:first-child');
                 var text = control.html();
                 cp['text'] = text;
-
+                var st = $(control).attr('style');
+                if (typeof(st) != "undefined")
+                    cp['style'] = st;
                 break;
             }
             case 'Textbox':
@@ -90,6 +105,24 @@ $(document).ready(function () {
 
                 break;
             }
+            case 'Textarea':
+            {
+                control = $(this).find('textarea:first-child');
+                var ph = $(control).attr('placeHolder');
+                var st = $(control).attr('style');
+                var cols = $(control).attr('cols');
+                var rows = $(control).attr('rows');
+                if (typeof(ph) != "undefined")
+                    cp['placeHolder'] = ph;
+                if (typeof(st) != "undefined")
+                    cp['style'] = st;
+                if (typeof(cols) != "undefined")
+                    cp['cols'] = cols;
+                if (typeof(rows) != "undefined")
+                    cp['rows'] = rows;
+
+                break;
+            }
             case 'Combobox':
             {
                 control = $(this).find('select:first-child');
@@ -99,6 +132,9 @@ $(document).ready(function () {
                     items.push(this.text);
                 });
                 cp['items'] = items.join(';');
+                var st = $(control).attr('style');
+                if (typeof(st) != "undefined")
+                    cp['style'] = st;
 
                 break;
             }
@@ -108,6 +144,9 @@ $(document).ready(function () {
                 var name = $(control).attr('name');
                 if (typeof(name) != "undefined")
                     cp['name'] = name;
+                var st = $(control).attr('style');
+                if (typeof(st) != "undefined")
+                    cp['style'] = st;
                 break;
             }
             // case ...
@@ -142,7 +181,7 @@ function mapAndRenderControl(type) {
         </select>${closeDiv}`;
             break;
         case 'Textarea':
-            return `<textarea name="txtarea_${controlName}" rows="4">content of text area</textarea>${closeDiv}`;
+            return `<textarea name="txtarea_${controlName}" rows="4"></textarea>${closeDiv}`;
             break;
         case 'Radio':
             return `<input name="rdo_${controlName}" type="radio"/>${closeDiv}`;
