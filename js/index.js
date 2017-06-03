@@ -11,6 +11,9 @@ var controlProperty = {
     },
     'Combobox': {
         'items': ''
+    },
+    'Radio': {
+        'name': ''
     }
 };
 $(document).ready(function () {
@@ -29,6 +32,9 @@ $(document).ready(function () {
 
     $(document).on('click', '.remo_control', function (event) {
         $(this).parents('.obj-dropped.selected').remove();
+        setTimeout(function(){
+            $("#properties").html('');
+        },500);
     });
     $(document).on('keyup', '#properties input', function (event) {
         var attr = $(this).data('attr');
@@ -50,9 +56,11 @@ $(document).ready(function () {
                 control.append(`<option value="${item}">${item}</option>`);
             });
         }
+        if(attr=='name'){
+            control.attr(attr,$(this).val());
+        }
     });
     $(document).on('click', '.obj-dropped', function (event) {
-        event.preventDefault();
         $('.obj-dropped').removeClass('selected');
         $(this).addClass('selected');
         var typeControl = $(this).data('type');
@@ -94,6 +102,14 @@ $(document).ready(function () {
 
                 break;
             }
+            case 'Radio':
+            {
+                control = $(this).find('input:first-child');
+                var name = $(control).attr('name');
+                if (typeof(name) != "undefined")
+                    cp['name'] = name;
+                break;
+            }
             // case ...
         }
         if (control != null) {
@@ -129,13 +145,16 @@ function mapAndRenderControl(type) {
             return `<textarea name="txtarea_${controlName}" rows="4">content of text area</textarea>${closeDiv}`;
             break;
         case 'Radio':
-            return `<input name="_rdo_${controlName}" type="radio"/>${closeDiv}`;
+            return `<input name="rdo_${controlName}" type="radio"/>${closeDiv}`;
             break;
         case 'Checkbox':
             return `<input name="chk_${controlName}" type="checkbox"/>${closeDiv}`;
             break;
         case 'Label':
             return `<label name="lbl_${controlName}">Label</label>${closeDiv}`;
+            break;
+        case 'Break-Line':
+            return `<br/>`;
             break;
         default:
             return type;
